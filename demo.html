@@ -1,0 +1,63 @@
+<html>
+<script type="text/javascript" src="crypto-js.js"></script>
+<script>
+    // const fs = require('fs')
+    
+    var burl = 'https://fapi.binance.com';
+    var endPoint = '/fapi/v1/positionRisk';
+    var dataQueryString = 'recvWindow=20000&timestamp=' + Date.now();
+    
+    var keys = {
+        'akey' : 'WBe9rndEA4plO2N6tbJNk4Vq37HFO71FrVSQIjJOVFbyrq9SaUcf8KlBRwUk6udg',
+        'skey' : '82PLRB9x6gMmdTPdSNKLPhId5GIbKhkzLUbBMu942q8wWSTyfFkrs7xj671qnVpR'
+    }
+    
+    var signature = CryptoJS.HmacSHA256(dataQueryString ,keys['skey']).toString(CryptoJS.enc.Hex);
+    
+    var ourRequest = new XMLHttpRequest();
+    
+    var url = burl + endPoint + '?' + dataQueryString + '&signature=' + signature;
+    
+    ourRequest.open('GET', url, true);
+    ourRequest.setRequestHeader('X-MBX-APIKEY',keys['akey']);
+    var mydata = ""
+    ourRequest.onload = function(){
+        ourData = JSON.parse(ourRequest.responseText);
+        console.log(ourData);
+        ourData.map((i)=>{
+            if(i.symbol == "ETHUSDT"){
+                console.log("i --> ",i)
+                // mydata = JSON.stringify(i)
+                document.getElementById("myText").innerHTML = i.positionAmt
+            }
+        })
+ 
+    }
+  
+  
+  
+    ourRequest.send();
+
+    const interval = setInterval(function() {
+        ourData = JSON.parse(ourRequest.responseText);
+        console.log(ourData);
+        ourData.map((i)=>{
+            if(i.symbol == "ETHUSDT"){
+                // console.log("i --> ",i)
+                // mydata = JSON.stringify(i)
+                document.getElementById("myText").innerHTML = i.positionAmt
+            }
+        })
+   // method to be executed;
+ }, 3000);
+
+// clearInterval(interval);
+    
+    
+</script>
+<body>
+
+    <h6>"The value for number is: " <span id="myText"></span></h6>
+  
+  </body>
+</html>
